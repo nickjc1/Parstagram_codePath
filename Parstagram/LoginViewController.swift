@@ -26,6 +26,10 @@ class LoginViewController: UIViewController {
         let tf = UITextField()
         tf.contentMode = .left
         tf.borderStyle = .roundedRect
+        tf.autocorrectionType = UITextAutocorrectionType.no
+        tf.autocapitalizationType = UITextAutocapitalizationType.none
+        tf.textContentType = UITextContentType.oneTimeCode
+        tf.clearsOnBeginEditing = true
         tf.placeholder = "username"
         return tf
     }()
@@ -34,6 +38,11 @@ class LoginViewController: UIViewController {
         let tf = UITextField()
         tf.borderStyle = .roundedRect
         tf.placeholder = "password"
+        tf.autocapitalizationType = .none
+        tf.textContentType = UITextContentType.oneTimeCode
+        tf.autocorrectionType = .no
+        tf.clearsOnBeginEditing = true
+        tf.isSecureTextEntry = true
         return tf
     }()
     
@@ -136,30 +145,80 @@ extension LoginViewController {
     
     func buttonsAddTarget() {
         signupButton.addTarget(self, action: #selector(signupButtonTapped(_:)), for: .touchUpInside)
+        signinButton.addTarget(self, action: #selector(signinButtonTapped(_:)), for: .touchUpInside)
     }
+    
     @objc func signupButtonTapped(_ sender: UIButton) {
         if(usernameTextField.text?.count != 0 && passwordTextField.text?.count != 0) {
+            if(passwordTextField.text!.count < 8) {
+                displayAlert(for: nil, for: "Password should be at least 8 characters") { alert in
+                    self.present(alert, animated: true, completion: nil)
+                }
+                passwordTextField.text = ""
+                return
+            }
             let user = PFUser()
             user.username = usernameTextField.text
-            user.password = usernameTextField.text
+            user.password = passwordTextField.text
             user.signUpInBackground { (success, error) in
                 if(success) {
-                    let mvc = MainViewController()
-                    let nvc = UINavigationController(rootViewController: mvc)
-                    nvc.modalPresentationStyle = .fullScreen
-                    self.modalPresentationStyle = .fullScreen
-                    self.present(nvc, animated: true, completion: nil)
-                    
-                } else {
-                    if let e = error {
-                        print("Sign up failed with error: \(e)")
-                    } else {
-                        print("Sign up failed with error.")
+                    self.present2MainViewController()
+                } else if(error != nil){
+                    //print("here with error")
+                    self.displayAlert(for: error, for: nil) { alert in
+                        self.present(alert, animated: true, completion: nil)
+                        self.passwordTextField.text = ""
                     }
-                    
+                } else {
+                    //print("here with error message")
+                    self.displayAlert(for: nil, for: "Failed to Sign up with unknown error") { alert in
+                        self.present(alert, animated: true, completion: nil)
+                        self.passwordTextField.text = ""
+                    }
                 }
             }
         }
+    }
+    
+    @objc func signinButtonTapped(_ sender: UIButton) {
+        if(usernameTextField.text?.count == 0 || passwordTextField.text?.count == 0) {
+            displayAlert(for: nil, for: "Please give currect user name and password") { alertMessage in
+                self.present(alertMessage, animated: true, completion: nil)
+            }
+            return
+        }
+        let username = usernameTextField.text!
+        let password = passwordTextField.text!
+        PFUser.logInWithUsername(inBackground: username, password: password) { (user, error) in
+            if(user != nil) {
+                self.present2MainViewController()
+            } else if(error != nil){
+                self.displayAlert(for: error, for: nil) { alertMessage in
+                    self.present(alertMessage, animated: true, completion: nil)
+                }
+            } else {
+                self.displayAlert(for: nil, for: "Failed to log in with unknown error") { alertMessage in
+                    self.present(alertMessage, animated: true, completion: nil)
+                }
+            }
+        }
+        
+    }
+    
+    func present2MainViewController() {
+        let mvc = MainViewController()
+        let nvc = UINavigationController(rootViewController: mvc)
+        nvc.modalPresentationStyle = .fullScreen
+        self.modalPresentationStyle = .fullScreen
+        self.present(nvc, animated: true, completion: nil)
+    }
+    
+    func displayAlert(for error: Error?, for errorMessage: String?, present: (UIAlertController) -> ()){
+        let errorStr = error != nil ? error!.localizedDescription : errorMessage!
+        let alertMessage = UIAlertController(title: "Error", message: errorStr, preferredStyle: UIAlertController.Style.alert)
+        let alertConformButton = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil)
+        alertMessage.addAction(alertConformButton)
+        present(alertMessage)
     }
 }
 

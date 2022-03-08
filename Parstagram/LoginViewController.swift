@@ -78,7 +78,6 @@ class LoginViewController: UIViewController {
         setupSignupSigninButtonViewLayout()
         
         buttonsAddTarget()
-        
     }
 }
 

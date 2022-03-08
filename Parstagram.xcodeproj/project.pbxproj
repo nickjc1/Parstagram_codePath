@@ -14,7 +14,7 @@
 		DF38C3D427D5212C002807FA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DF38C3D227D5212C002807FA /* Main.storyboard */; };
 		DF38C3D627D5212C002807FA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DF38C3D527D5212C002807FA /* Assets.xcassets */; };
 		DF38C3D927D5212C002807FA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DF38C3D727D5212C002807FA /* LaunchScreen.storyboard */; };
-		DF8BF31C27D68ACE0058A65E /* CreatImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF8BF31B27D68ACE0058A65E /* CreatImageViewController.swift */; };
+		DF8BF32427D6CB940058A65E /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF8BF32327D6CB940058A65E /* ImageViewController.swift */; };
 		DFEDD7A027D5B43F008FA758 /* mainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFEDD79F27D5B43F008FA758 /* mainViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -29,7 +29,7 @@
 		DF38C3D527D5212C002807FA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DF38C3D827D5212C002807FA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DF38C3DA27D5212C002807FA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DF8BF31B27D68ACE0058A65E /* CreatImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatImageViewController.swift; sourceTree = "<group>"; };
+		DF8BF32327D6CB940058A65E /* ImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ImageViewController.swift; path = "/Users/cjiang/Desktop/iOS/1. Project/Parstagram/Parstagram/Parstagram/ImageViewController.swift"; sourceTree = "<absolute>"; };
 		DFEDD79F27D5B43F008FA758 /* mainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mainViewController.swift; sourceTree = "<group>"; };
 		F9303BD0E9261D8CBBFCBF83 /* Pods-Parstagram.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Parstagram.release.xcconfig"; path = "Target Support Files/Pods-Parstagram/Pods-Parstagram.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -79,7 +79,7 @@
 				DF38C3CE27D5212C002807FA /* SceneDelegate.swift */,
 				DF38C3D027D5212C002807FA /* LoginViewController.swift */,
 				DFEDD79F27D5B43F008FA758 /* mainViewController.swift */,
-				DF8BF31B27D68ACE0058A65E /* CreatImageViewController.swift */,
+				DF8BF32327D6CB940058A65E /* ImageViewController.swift */,
 				DF38C3D227D5212C002807FA /* Main.storyboard */,
 				DF38C3D527D5212C002807FA /* Assets.xcassets */,
 				DF38C3D727D5212C002807FA /* LaunchScreen.storyboard */,
@@ -214,8 +214,8 @@
 			files = (
 				DF38C3D127D5212C002807FA /* LoginViewController.swift in Sources */,
 				DF38C3CD27D5212C002807FA /* AppDelegate.swift in Sources */,
-				DF8BF31C27D68ACE0058A65E /* CreatImageViewController.swift in Sources */,
 				DF38C3CF27D5212C002807FA /* SceneDelegate.swift in Sources */,
+				DF8BF32427D6CB940058A65E /* ImageViewController.swift in Sources */,
 				DFEDD7A027D5B43F008FA758 /* mainViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

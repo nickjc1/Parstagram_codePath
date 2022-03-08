@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Parse
 
 class ImageViewController: UIViewController {
 
@@ -38,6 +39,7 @@ class ImageViewController: UIViewController {
         
         setupImageViewlayout()
         setupCaptionLayout()
+        navigationBarRightButtonSetup()
     }
 
 }
@@ -90,4 +92,33 @@ extension ImageViewController: UITextViewDelegate {
     }
 }
 
-//MARK: - 
+//MARK: - Navigation bar right button set up
+extension ImageViewController {
+    func navigationBarRightButtonSetup() {
+        let button = UIBarButtonItem(title: "Share", style: .plain, target: self, action: #selector(shareButtonTapped(_:)))
+        self.navigationItem.rightBarButtonItem = button
+    }
+    
+    @objc func shareButtonTapped(_ sender: UIBarButtonItem) {
+        let post = PFObject(className: "Posts")
+        if let imageData = selectedImageView.image?.pngData() {
+            post["image"] = PFFileObject(name: "image", data: imageData)
+            if(caption.text != "Write a caption...") {
+                post["caption"] = self.caption.text
+            } else {
+                post["caption"] = ""
+            }
+            guard let user = PFUser.current() else {return}
+            post["user"] = user
+        }
+        post.saveInBackground { (success, error) in
+            if(success) {
+                print("successfully saved!")
+                self.navigationController?.popViewController(animated: true)
+            } else {
+                let errorData = error == nil ? "unknown error" : error!.localizedDescription
+                print("failed to save data with error: \(errorData)")
+            }
+        }
+    }
+}

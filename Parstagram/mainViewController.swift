@@ -11,11 +11,6 @@ import AlamofireImage
 
 
 class MainViewController: UIViewController {
-    
-    let postOptionPickView: UIPickerView = {
-        let pv = UIPickerView()
-        return pv
-    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,7 +51,8 @@ extension MainViewController: UIImagePickerControllerDelegate, UINavigationContr
         optionAlert.addAction(cancel)
         self.present(optionAlert, animated: true, completion: nil)
     }
-    
+
+    // Picer using album by PHPickerViewController
     func pickUsingAlbum() {
         var config = PHPickerConfiguration()
         config.selectionLimit = 1
@@ -65,14 +61,6 @@ extension MainViewController: UIImagePickerControllerDelegate, UINavigationContr
         let picker = PHPickerViewController(configuration: config)
         picker.delegate = self
         self.present(picker, animated: true, completion: nil)
-    }
-    
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let image = info[.editedImage] as? UIImage {
-            DispatchQueue.main.async {
-                self.presentNextViewController(image: image)
-            }
-        }
     }
     
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
@@ -89,6 +77,7 @@ extension MainViewController: UIImagePickerControllerDelegate, UINavigationContr
         }
     }
     
+    //Pick using camera buy UIImagePickerController
     func pickUsingCamera() {
         if(UIImagePickerController.isSourceTypeAvailable(.camera)) {
             let picker = UIImagePickerController()
@@ -103,6 +92,15 @@ extension MainViewController: UIImagePickerControllerDelegate, UINavigationContr
         }
     }
     
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let image = info[.editedImage] as? UIImage {
+            DispatchQueue.main.async {
+                self.presentNextViewController(image: image)
+            }
+        }
+    }
+    
+    //push to next viewcontroller after picking the image
     func presentNextViewController(image: UIImage) {
         let size = CGSize(width: 300, height: 300)
         let scaledImage:UIImage = image.af.imageScaled(to: size, scale: nil)

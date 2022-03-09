@@ -20,6 +20,7 @@ class MainViewController: UIViewController {
     }()
     
     var posts = [PFObject]()
+    var limit = 4
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -181,6 +182,13 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if(indexPath.row == posts.count - 1) {
+            self.limit += 2
+            queryData()
+        }
+    }
+    
     
 }
 
@@ -190,7 +198,7 @@ extension MainViewController {
     func queryData() {
         let query = PFQuery(className: "Posts")
         query.includeKey("user")
-        query.limit = 3
+        query.limit = self.limit
         
         query.findObjectsInBackground { posts, error in
             if let unWrappedPosts = posts {

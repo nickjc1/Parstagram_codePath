@@ -19,7 +19,7 @@ class PostTableViewCell: UITableViewCell {
     let authorLabel: UILabel = {
         let lb = UILabel()
         lb.font = .boldSystemFont(ofSize: 18)
-        lb.backgroundColor = .systemGray
+//        lb.backgroundColor = .systemGray
         return lb
     }()
     
@@ -34,7 +34,7 @@ class PostTableViewCell: UITableViewCell {
     let captionLabel: UILabel = {
         let lb = UILabel()
         lb.font = .systemFont(ofSize: 18)
-        lb.backgroundColor = .systemMint
+//        lb.backgroundColor = .systemMint
         return lb
     }()
 

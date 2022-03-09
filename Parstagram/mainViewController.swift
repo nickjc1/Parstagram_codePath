@@ -8,6 +8,7 @@
 import UIKit
 import PhotosUI
 import AlamofireImage
+import Parse
 
 
 class MainViewController: UIViewController {
@@ -17,6 +18,8 @@ class MainViewController: UIViewController {
         tv.register(PostTableViewCell.self, forCellReuseIdentifier: "cell")
         return tv
     }()
+    
+    var posts = [PFObject]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,8 +28,13 @@ class MainViewController: UIViewController {
         
         setupNavigationBarRightButton()
         imagePostTableViewLayoutSetup()
+        
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        queryData()
+    }
 }
 
 //MARK: - Navigationbar rightbutton setup and functionality
@@ -126,6 +134,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         imagePostTableView.delegate = self
         imagePostTableView.dataSource = self
+        imagePostTableView.allowsSelection = false
         
         imagePostTableView.rowHeight = 400
         imagePostTableView.translatesAutoresizingMaskIntoConstraints = false
@@ -138,13 +147,55 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        10
+        posts.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell")!
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as? PostTableViewCell else {return UITableViewCell()}
+        let total = posts.count
+        let post = posts[total - 1 - indexPath.row]
+//        print(indexPath.row)
+        if let user = post["user"] as? PFUser {
+            cell.authorLabel.text = user.username
+            if let userImagefile = user.object(forKey: "portrait") as? PFFileObject {
+                if let urlStr = userImagefile.url {
+                    if let url = URL(string: urlStr) {
+                        cell.authorImageView.af.setImage(withURL: url)
+                    }
+                }
+            }
+        }
+        if let caption = post["caption"] as? String {
+            cell.captionLabel.text = caption
+        }
+        
+        if let imageFile = post["image"] as? PFFileObject {
+            if let urlString = imageFile.url {
+                if let url = URL(string: urlString) {
+                    cell.igPostImageView.af.setImage(withURL: url)
+                }
+            }
+        }
+        
         return cell
     }
     
     
+}
+
+//MARK: - fetch data from parse
+extension MainViewController {
+    
+    func queryData() {
+        let query = PFQuery(className: "Posts")
+        query.includeKey("user")
+        query.limit = 20
+        
+        query.findObjectsInBackground { posts, error in
+            if let unWrappedPosts = posts {
+                self.posts = unWrappedPosts
+                self.imagePostTableView.reloadData()
+            }
+        }
+    }
 }

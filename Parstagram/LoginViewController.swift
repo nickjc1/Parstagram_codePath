@@ -148,35 +148,8 @@ extension LoginViewController {
     }
     
     @objc func signupButtonTapped(_ sender: UIButton) {
-        if(usernameTextField.text?.count != 0 && passwordTextField.text?.count != 0) {
-            if(passwordTextField.text!.count < 8) {
-                displayAlert(for: nil, for: "Password should be at least 8 characters") { alert in
-                    self.present(alert, animated: true, completion: nil)
-                }
-                passwordTextField.text = ""
-                return
-            }
-            let user = PFUser()
-            user.username = usernameTextField.text
-            user.password = passwordTextField.text
-            user.signUpInBackground { (success, error) in
-                if(success) {
-                    self.present2MainViewController()
-                } else if(error != nil){
-                    //print("here with error")
-                    self.displayAlert(for: error, for: nil) { alert in
-                        self.present(alert, animated: true, completion: nil)
-                        self.passwordTextField.text = ""
-                    }
-                } else {
-                    //print("here with error message")
-                    self.displayAlert(for: nil, for: "Failed to Sign up with unknown error") { alert in
-                        self.present(alert, animated: true, completion: nil)
-                        self.passwordTextField.text = ""
-                    }
-                }
-            }
-        }
+        let vc = SignupViewController()
+        self.present(vc, animated: true, completion: nil)
     }
     
     @objc func signinButtonTapped(_ sender: UIButton) {

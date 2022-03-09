@@ -11,6 +11,12 @@ import AlamofireImage
 
 
 class MainViewController: UIViewController {
+    
+    let imagePostTableView: UITableView = {
+        let tv = UITableView()
+        tv.register(PostTableViewCell.self, forCellReuseIdentifier: "cell")
+        return tv
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,6 +24,7 @@ class MainViewController: UIViewController {
         self.navigationItem.title = "Instagram"
         
         setupNavigationBarRightButton()
+        imagePostTableViewLayoutSetup()
     }
     
 }
@@ -79,10 +86,10 @@ extension MainViewController: UIImagePickerControllerDelegate, UINavigationContr
     
     //Pick using camera buy UIImagePickerController
     func pickUsingCamera() {
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        picker.allowsEditing = true
         if(UIImagePickerController.isSourceTypeAvailable(.camera)) {
-            let picker = UIImagePickerController()
-            picker.delegate = self
-            picker.allowsEditing = true
             picker.sourceType = .camera
             self.present(picker, animated: true, completion: nil)
         } else {
@@ -98,14 +105,46 @@ extension MainViewController: UIImagePickerControllerDelegate, UINavigationContr
                 self.presentNextViewController(image: image)
             }
         }
+        picker.dismiss(animated: true, completion: nil)
     }
     
     //push to next viewcontroller after picking the image
     func presentNextViewController(image: UIImage) {
         let size = CGSize(width: 300, height: 300)
         let scaledImage:UIImage = image.af.imageScaled(to: size, scale: nil)
-        let vc = ImageViewController()
+        let vc = ImagePostViewController()
         vc.selectedImageView.image = scaledImage
         self.navigationController?.pushViewController(vc, animated: true)
     }
+}
+
+//MARK: - tableViewDelegate, tableViewDataSource, tableViewLayout setup
+extension MainViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func imagePostTableViewLayoutSetup() {
+        self.view.addSubview(imagePostTableView)
+        
+        imagePostTableView.delegate = self
+        imagePostTableView.dataSource = self
+        
+        imagePostTableView.rowHeight = 400
+        imagePostTableView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            imagePostTableView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            imagePostTableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            imagePostTableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            imagePostTableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+        ])
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        10
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell")!
+        return cell
+    }
+    
+    
 }

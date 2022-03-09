@@ -8,7 +8,7 @@
 import UIKit
 import Parse
 
-class ImageViewController: UIViewController {
+class ImagePostViewController: UIViewController {
 
 //MARK: - Class memeber
     let selectedImageView:UIImageView = {
@@ -45,7 +45,7 @@ class ImageViewController: UIViewController {
 }
 
 //MARK: - UI Layout
-extension ImageViewController {
+extension ImagePostViewController {
     func setupImageViewlayout() {
         self.view.addSubview(selectedImageView)
         selectedImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -72,7 +72,7 @@ extension ImageViewController {
 }
 
 //MARK: - setup caption textview placeholder via UITextViewDelegate; added gesture recognizer to self.view
-extension ImageViewController: UITextViewDelegate {
+extension ImagePostViewController: UITextViewDelegate {
     
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
         textView.text = ""
@@ -93,7 +93,7 @@ extension ImageViewController: UITextViewDelegate {
 }
 
 //MARK: - Navigation bar right button set up
-extension ImageViewController {
+extension ImagePostViewController {
     func navigationBarRightButtonSetup() {
         let button = UIBarButtonItem(title: "Share", style: .plain, target: self, action: #selector(shareButtonTapped(_:)))
         self.navigationItem.rightBarButtonItem = button

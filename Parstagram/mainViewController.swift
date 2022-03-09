@@ -28,6 +28,7 @@ class MainViewController: UIViewController {
         
         setupNavigationBarRightButton()
         imagePostTableViewLayoutSetup()
+        drapDown2RefreshData()
         
     }
     
@@ -189,7 +190,7 @@ extension MainViewController {
     func queryData() {
         let query = PFQuery(className: "Posts")
         query.includeKey("user")
-        query.limit = 20
+        query.limit = 3
         
         query.findObjectsInBackground { posts, error in
             if let unWrappedPosts = posts {
@@ -199,3 +200,19 @@ extension MainViewController {
         }
     }
 }
+
+//MARK: - reload data by drop down
+extension MainViewController {
+    func drapDown2RefreshData() {
+        self.imagePostTableView.refreshControl = UIRefreshControl()
+        imagePostTableView.refreshControl?.addTarget(self, action: #selector(tableViewDrappedDown), for: .valueChanged)
+    }
+    
+    @objc func tableViewDrappedDown() {
+        self.queryData()
+        DispatchQueue.main.async {
+            self.imagePostTableView.refreshControl?.endRefreshing()
+        }
+    }
+}
+

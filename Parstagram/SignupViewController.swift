@@ -81,12 +81,6 @@ class SignupViewController: UIViewController {
         layoutSetup()
         buttonAddTarget()
     }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        self.dismiss(animated: true, completion: nil)
-    }
-
 }
 
 
@@ -176,9 +170,13 @@ extension SignupViewController: UIImagePickerControllerDelegate, UINavigationCon
         
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let cameraAction = UIAlertAction(title: "Camera", style: .default) { action in
+            
             if(UIImagePickerController.isSourceTypeAvailable(.camera)) {
                 picker.sourceType = .camera
+                picker.cameraCaptureMode = .photo
+                picker.modalPresentationStyle = .fullScreen
                 self.present(picker, animated: true, completion: nil)
+                
             } else {
                 let alert = UIAlertController(title: "Error", message: "The camera is not avalible", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .destructive, handler: nil))

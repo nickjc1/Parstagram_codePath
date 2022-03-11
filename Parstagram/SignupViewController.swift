@@ -224,25 +224,19 @@ extension SignupViewController {
             return
         }
         
-        let user = PFUser()
-        user.username = self.usernameTextField.text!
-        user.password = self.passwordTextField.text!
-        let imagedata = userImageView.image?.pngData()
-        if let data = imagedata {
-            let imageFile = PFFileObject(name: "avatar", data: data)!
-            user.setObject(imageFile, forKey: "portrait")
-        }
+        //create user model
+        let user = User(username: usernameTextField.text!, password: passwordTextField.text!, profileImage: userImageView.image!)
         
-        user.signUpInBackground { (success, error) in
-            
-            if(success) {
-                print("new accout created successfully")
-                self.presentMainViewController()
-            } else if(error != nil){
+        //connect to server using created user model
+        ParseServerComm.userSignup(for: user) {
+            print("new account created successfully!")
+            self.presentMainViewController()
+        } event4fail: { error in
+            if(error != nil) {
                 if(error!.localizedDescription == "Account already exists for this username.") {
                     self.signupAlert(for: .alreadyExited)
                 }
-                print("sign up failed with error \(error!.localizedDescription)")
+                print("Sign up failed with error: \(error!.localizedDescription)")
             }
         }
     }

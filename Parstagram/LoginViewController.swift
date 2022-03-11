@@ -154,25 +154,29 @@ extension LoginViewController {
     
     @objc func signinButtonTapped(_ sender: UIButton) {
         if(usernameTextField.text?.count == 0 || passwordTextField.text?.count == 0) {
-            displayAlert(for: nil, for: "Please give currect user name and password") { alertMessage in
+            displayAlert(for: nil, for: "Please provide your user name and password to log in") { alertMessage in
                 self.present(alertMessage, animated: true, completion: nil)
             }
             return
         }
-        let username = usernameTextField.text!
-        let password = passwordTextField.text!
-        PFUser.logInWithUsername(inBackground: username, password: password) { (user, error) in
-            if(user != nil) {
-                self.present2MainViewController()
-            } else if(error != nil){
-                self.displayAlert(for: error, for: nil) { alertMessage in
-                    self.present(alertMessage, animated: true, completion: nil)
+        
+        //Model
+        let user2SignIn = User(username: usernameTextField.text!, password: passwordTextField.text!, profileImage: UIImage())
+        
+        //talk to server
+        ParseServerComm.userSignIn(for: user2SignIn) {
+            self.present2MainViewController()
+        } event4fail: { error in
+            if(error != nil) {
+                self.displayAlert(for: error, for: nil) { alert in
+                    self.present(alert, animated: true, completion: nil)
                 }
             } else {
-                self.displayAlert(for: nil, for: "Failed to log in with unknown error") { alertMessage in
-                    self.present(alertMessage, animated: true, completion: nil)
+                self.displayAlert(for: nil, for: "Failed to login with unknown error") { alert in
+                    self.present(alert, animated: true, completion: nil)
                 }
             }
+            
         }
         
     }

@@ -79,6 +79,15 @@ class LoginViewController: UIViewController {
         
         buttonsAddTarget()
     }
+    
+//MARK: - viewDidAppear
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//
+//        if(LoginStatus.isLoggedIn) {
+//            self.present2MainViewController()
+//        }
+//    }
 }
 
 
@@ -164,6 +173,7 @@ extension LoginViewController {
         PFUser.logInWithUsername(inBackground: username, password: password) { (user, error) in
             if(user != nil) {
                 self.present2MainViewController()
+//                LoginStatus.isLoggedIn = true
             } else if(error != nil){
                 self.displayAlert(for: error, for: nil) { alertMessage in
                     self.present(alertMessage, animated: true, completion: nil)
@@ -194,3 +204,19 @@ extension LoginViewController {
     }
 }
 
+
+    
+//struct LoginStatus {
+//    
+//    static var isLoggedIn: Bool {
+//        get {
+//            UserDefaults.standard.bool(forKey: "loginStatus")
+//        }
+//        
+//        set {
+//            UserDefaults.standard.set(newValue, forKey: "loginStatus")
+//        }
+//    }
+//        
+//    
+//}

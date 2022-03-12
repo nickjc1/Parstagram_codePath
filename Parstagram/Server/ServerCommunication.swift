@@ -1,30 +1,21 @@
 //
-//  Model.swift
+//  ServerCommunication.swift
 //  Parstagram
 //
-//  Created by Chao Jiang on 3/11/22.
+//  Created by Chao Jiang on 3/12/22.
 //
 
-import Foundation
+import UIKit
 import Parse
-
-
-struct User {
-    let username: String
-    let password: String
-    let profileImage: UIImage
-}
-
-struct Post {
-    let user: User
-    let caption: String
-    let image: UIImage
-}
 
 struct ParseServerComm {
     
+    typealias successFunc = ()->()
+    typealias failFunc = (Error?)->()
+    
+    
     //sign up
-    static func userSignup(for user: User,  event4success: @escaping ()->(), event4fail: @escaping (Error?)->()) {
+    static func userSignup(for user: User,  event4success: @escaping successFunc, event4fail: @escaping failFunc) {
         let pfUser = PFUser()
         pfUser.username = user.username
         pfUser.password = user.password
@@ -43,7 +34,7 @@ struct ParseServerComm {
     }
     
     //sign in
-    static func userSignIn(for user: User, event4success: @escaping ()->(), event4fail: @escaping (Error?)->()) {
+    static func userSignIn(for user: User, event4success: @escaping successFunc, event4fail: @escaping failFunc) {
         PFUser.logInWithUsername(inBackground: user.username, password: user.password) { (user, error) in
             if(user != nil) {
                 event4success()
@@ -54,8 +45,24 @@ struct ParseServerComm {
     }
     
     //post to server
+    static func post(imagePost: ImagePost, succeeded: @escaping successFunc, failed: @escaping failFunc) {
+        let post = PFObject(className: "Posts")
+        post["user"] = imagePost.user
+        post["image"] = imagePost.image
+        post["caption"] = imagePost.caption
+        post.saveInBackground { success, error in
+            if(success) {
+                succeeded()
+            } else {
+                failed(error)
+            }
+        }
+        
+    }
     
     //fetch posts from server
+    
+    
     
     private static func imageConvert(for image: UIImage) -> PFFileObject? {
         if let imageData = image.pngData() {

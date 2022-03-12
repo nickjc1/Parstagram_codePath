@@ -18,7 +18,7 @@ class ImagePostViewController: UIViewController {
         return iv
     }()
     
-    let caption:UITextView = {
+    let captionTextView:UITextView = {
         let tv = UITextView()
         tv.contentMode = .left
         tv.textColor = .systemGray
@@ -32,7 +32,7 @@ class ImagePostViewController: UIViewController {
         super.viewDidLoad()
         self.view.backgroundColor = .white
         
-        caption.delegate = self
+        captionTextView.delegate = self
         let viewTapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard(_:)))
         self.view.addGestureRecognizer(viewTapGesture)
 
@@ -59,14 +59,14 @@ extension ImagePostViewController {
     }
     
     func setupCaptionLayout() {
-        self.view.addSubview(caption)
-        caption.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(captionTextView)
+        captionTextView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            caption.topAnchor.constraint(equalTo: self.selectedImageView.topAnchor),
-            caption.leadingAnchor.constraint(equalTo: self.selectedImageView.trailingAnchor, constant: 8),
-            caption.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -8),
-            caption.bottomAnchor.constraint(equalTo: self.selectedImageView.bottomAnchor)
+            captionTextView.topAnchor.constraint(equalTo: self.selectedImageView.topAnchor),
+            captionTextView.leadingAnchor.constraint(equalTo: self.selectedImageView.trailingAnchor, constant: 8),
+            captionTextView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -8),
+            captionTextView.bottomAnchor.constraint(equalTo: self.selectedImageView.bottomAnchor)
         ])
     }
 }
@@ -88,7 +88,7 @@ extension ImagePostViewController: UITextViewDelegate {
     }
     
     @objc func dismissKeyboard(_ sender: UITapGestureRecognizer) {
-        caption.resignFirstResponder()
+        captionTextView.resignFirstResponder()
     }
 }
 
@@ -100,25 +100,18 @@ extension ImagePostViewController {
     }
     
     @objc func shareButtonTapped(_ sender: UIBarButtonItem) {
-        let post = PFObject(className: "Posts")
-        if let imageData = selectedImageView.image?.pngData() {
-            post["image"] = PFFileObject(name: "image", data: imageData)
-            if(caption.text != "Write a caption...") {
-                post["caption"] = self.caption.text
-            } else {
-                post["caption"] = ""
-            }
-            guard let user = PFUser.current() else {return}
-            post["user"] = user
-        }
-        post.saveInBackground { (success, error) in
-            if(success) {
-                print("successfully saved!")
-                self.navigationController?.popViewController(animated: true)
-            } else {
-                let errorData = error == nil ? "unknown error" : error!.localizedDescription
-                print("failed to save data with error: \(errorData)")
-            }
+        guard let image2BPost = selectedImageView.image?.pngData() else {return}
+        guard let imagefile = PFFileObject(name: "image", data: image2BPost) else {return}
+        guard let user = PFUser.current() else {return}
+        let cap: String = captionTextView.text == "Write a caption..." ? "" : captionTextView.text
+        
+        let post2BPost = ImagePost(user: user, caption: cap, image: imagefile)
+        ParseServerComm.post(imagePost: post2BPost) {
+            print("successfully saved!")
+            self.navigationController?.popViewController(animated: true)
+        } failed: { error in
+            let errorData = error == nil ? "unknown error" : error!.localizedDescription
+            print("failed to save data with error: \(errorData)")
         }
     }
 }

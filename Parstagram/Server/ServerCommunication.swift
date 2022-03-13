@@ -15,7 +15,9 @@ struct ParseServerComm {
     typealias failFunc = (Error?)->()
     
     
-    //sign up
+    ///sign up
+    ///
+    ///call event4success if sign up successfully completed
     static func userSignup(for user: User_signup,  event4success: @escaping successFunc, event4fail: @escaping failFunc) {
         let pfUser = PFUser()
         pfUser.username = user.username
@@ -34,7 +36,9 @@ struct ParseServerComm {
         }
     }
     
-    //sign in
+    ///sign in
+    ///
+    ///call event4success if authentication succeed
     static func userSignIn(for user: User_signin, event4success: @escaping successFunc, event4fail: @escaping failFunc) {
         PFUser.logInWithUsername(inBackground: user.username, password: user.password) { (user, error) in
             if(user != nil) {
@@ -45,7 +49,9 @@ struct ParseServerComm {
         }
     }
     
-///post image with caption to server
+    ///post image with caption to server
+    ///
+    ///call succeeded escaping clousure when the post process completed
     static func post(imagePost: PostData_post, succeeded: @escaping successFunc, failed: @escaping failFunc) {
         let post = PFObject(className: "Posts")
         
@@ -73,11 +79,11 @@ struct ParseServerComm {
         
     }
     
-///fetch posts from server with limit.
-///
-///return fetched posts by completion function to pass data to the outside of the closure
+    ///fetch posts from server with limit.
+    ///
+    ///return fetched posts by using completion function to pass data out of the closure
     static func getImagePosts(lessEqualThen queryLimit: Int, completion: @escaping ([PostData_Fetch])->()) {
-
+        
         let query = PFQuery(className: "Posts")
         query.includeKey("user")
         query.order(byDescending: "createdAt")
@@ -103,7 +109,7 @@ struct ParseServerComm {
             
             completion(posts)
         }
-
+        
     }
     
     

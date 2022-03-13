@@ -76,7 +76,7 @@ struct ParseServerComm {
 ///fetch posts from server with limit.
 ///
 ///return fetched posts by completion function to pass data to the outside of the closure
-    static func getImagePost(lessEqualThen queryLimit: Int, completion: @escaping ([PostData_Fetch])->()) {
+    static func getImagePosts(lessEqualThen queryLimit: Int, completion: @escaping ([PostData_Fetch])->()) {
 
         let query = PFQuery(className: "Posts")
         query.includeKey("user")

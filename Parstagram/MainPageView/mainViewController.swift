@@ -198,11 +198,11 @@ extension MainViewController {
     
     func queryData() {
         
-        ParseServerComm.getImagePost(lessEqualThen: self.limit) { posts in
+        ParseServerComm.getImagePosts(lessEqualThen: self.limit) { posts in
             self.posts = posts
+            self.imagePostTableView.reloadData()
         }
-
-        self.imagePostTableView.reloadData()
+//        self.imagePostTableView.reloadData()
     }
 }
 

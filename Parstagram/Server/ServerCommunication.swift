@@ -49,6 +49,13 @@ struct ParseServerComm {
         }
     }
     
+    ///log out
+    ///
+    ///Synchronously logs out the currently logged in user on disk.
+    static func userLogout() {
+        PFUser.logOut()
+    }
+    
     ///post image with caption to server
     ///
     ///call succeeded escaping clousure when the post process completed

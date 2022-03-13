@@ -28,6 +28,7 @@ class MainViewController: UIViewController {
         self.navigationItem.title = "Instagram"
         
         setupNavigationBarRightButton()
+        setupNavigationBarLeftButton()
         imagePostTableViewLayoutSetup()
         drapDown2RefreshData()
         queryData()
@@ -49,6 +50,21 @@ extension MainViewController {
     
     @objc func rightBarButtonTapped(_ sender: UIBarButtonItem) {
         displayPostOption()
+    }
+}
+
+//MARK: - Navigationbar leftbutton setup and functionality
+extension MainViewController {
+    func setupNavigationBarLeftButton() {
+        let barButton = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutButtonTapped(_:)))
+        self.navigationItem.leftBarButtonItem = barButton
+    }
+    
+    @objc func logoutButtonTapped(_ sender: UIBarButtonItem) {
+        ParseServerComm.userLogout()
+        guard let windownScene = UIApplication.shared.connectedScenes.first as? UIWindowScene, let delegate = windownScene.delegate as? SceneDelegate else {return}
+        let vc = LoginViewController()
+        delegate.window?.rootViewController = vc
     }
 }
 

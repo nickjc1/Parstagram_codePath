@@ -100,12 +100,13 @@ extension ImagePostViewController {
     }
     
     @objc func shareButtonTapped(_ sender: UIBarButtonItem) {
-        guard let image2BPost = selectedImageView.image?.pngData() else {return}
-        guard let imagefile = PFFileObject(name: "image", data: image2BPost) else {return}
-        guard let user = PFUser.current() else {return}
+        
+        guard let image2BPost = selectedImageView.image else {return}
         let cap: String = captionTextView.text == "Write a caption..." ? "" : captionTextView.text
         
-        let post2BPost = ImagePost(user: user, caption: cap, image: imagefile)
+        
+        let post2BPost = PostData_post(caption: cap, image: image2BPost)
+        
         ParseServerComm.post(imagePost: post2BPost) {
             print("successfully saved!")
             self.navigationController?.popViewController(animated: true)

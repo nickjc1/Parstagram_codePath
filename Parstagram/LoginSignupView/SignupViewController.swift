@@ -225,7 +225,7 @@ extension SignupViewController {
         }
         
         //create user model
-        let user = User(username: usernameTextField.text!, password: passwordTextField.text!, profileImage: userImageView.image!)
+        let user = User_signup(username: usernameTextField.text!, password: passwordTextField.text!, profileImage: userImageView.image!)
         
         //connect to server using created user model
         ParseServerComm.userSignup(for: user) {

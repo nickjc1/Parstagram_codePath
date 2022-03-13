@@ -8,16 +8,34 @@
 import UIKit
 import Parse
 
-struct User {
+struct User_signup {
     let username: String
     let password: String
     let profileImage: UIImage
+//    let profileImageFile: PFFileObject?
 }
 
-struct ImagePost {
-    let user: PFUser
-    let caption: String
-    let image: PFFileObject
+struct User_signin {
+    let username: String
+    let password: String
 }
+
+struct User_withPost {
+    let username: String
+    let profileImageFile: PFFileObject
+}
+
+struct PostData_post {
+    let caption: String
+    let image: UIImage
+}
+
+struct PostData_Fetch {
+    let user: User_withPost
+    let caption: String
+    let imageFile: PFFileObject
+    
+}
+
 
 

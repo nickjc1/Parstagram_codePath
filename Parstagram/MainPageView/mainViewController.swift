@@ -19,7 +19,7 @@ class MainViewController: UIViewController {
         return tv
     }()
     
-    var posts = [PFObject]()
+    var posts = [PostData_Fetch]()
     var limit = 4
 
     override func viewDidLoad() {
@@ -30,6 +30,7 @@ class MainViewController: UIViewController {
         setupNavigationBarRightButton()
         imagePostTableViewLayoutSetup()
         drapDown2RefreshData()
+        queryData()
         
     }
     
@@ -154,28 +155,25 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as? PostTableViewCell else {return UITableViewCell()}
-        let total = posts.count
-        let post = posts[total - 1 - indexPath.row]
-//        print(indexPath.row)
-        if let user = post["user"] as? PFUser {
-            cell.authorLabel.text = user.username
-            if let userImagefile = user.object(forKey: "portrait") as? PFFileObject {
-                if let urlStr = userImagefile.url {
-                    if let url = URL(string: urlStr) {
-                        cell.authorImageView.af.setImage(withURL: url)
-                    }
-                }
+        let post = posts[indexPath.row]
+        
+        let postAuthorName:String = post.user.username
+        cell.authorLabel.text = postAuthorName
+        
+        let postAuthroPortraitFile = post.user.profileImageFile
+        if let portraitUrlStr = postAuthroPortraitFile.url {
+            if let portraitUrl = URL(string: portraitUrlStr) {
+                cell.authorImageView.af.setImage(withURL: portraitUrl)
             }
         }
-        if let caption = post["caption"] as? String {
-            cell.captionLabel.text = caption
-        }
         
-        if let imageFile = post["image"] as? PFFileObject {
-            if let urlString = imageFile.url {
-                if let url = URL(string: urlString) {
-                    cell.igPostImageView.af.setImage(withURL: url)
-                }
+        let caption:String = post.caption
+        cell.captionLabel.text = caption
+        
+        let postImageFile = post.imageFile
+        if let imageUrlStr = postImageFile.url {
+            if let imageUrl = URL(string: imageUrlStr) {
+                cell.igPostImageView.af.setImage(withURL: imageUrl)
             }
         }
         
@@ -184,8 +182,11 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if(indexPath.row == posts.count - 1) {
-            self.limit += 2
-            queryData()
+            if(self.limit <= posts.count) {
+                self.limit += 2
+                queryData()
+            }
+            
         }
     }
     
@@ -196,16 +197,12 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 extension MainViewController {
     
     func queryData() {
-        let query = PFQuery(className: "Posts")
-        query.includeKey("user")
-        query.limit = self.limit
         
-        query.findObjectsInBackground { posts, error in
-            if let unWrappedPosts = posts {
-                self.posts = unWrappedPosts
-                self.imagePostTableView.reloadData()
-            }
+        ParseServerComm.getImagePost(lessEqualThen: self.limit) { posts in
+            self.posts = posts
         }
+
+        self.imagePostTableView.reloadData()
     }
 }
 
@@ -217,6 +214,7 @@ extension MainViewController {
     }
     
     @objc func tableViewDrappedDown() {
+        self.limit = 4
         self.queryData()
         DispatchQueue.main.async {
             self.imagePostTableView.refreshControl?.endRefreshing()

@@ -161,10 +161,10 @@ extension LoginViewController {
         }
         
         //Model
-        let user2SignIn = User(username: usernameTextField.text!, password: passwordTextField.text!, profileImage: UIImage())
+        let user = User_signin(username: usernameTextField.text!, password: passwordTextField.text!)
         
         //talk to server
-        ParseServerComm.userSignIn(for: user2SignIn) {
+        ParseServerComm.userSignIn(for: user) {
             self.present2MainViewController()
         } event4fail: { error in
             if(error != nil) {

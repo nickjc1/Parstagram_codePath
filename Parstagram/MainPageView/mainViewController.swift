@@ -129,7 +129,7 @@ extension MainViewController: UIImagePickerControllerDelegate, UINavigationContr
     }
 }
 
-//MARK: - tableViewDelegate, tableViewDataSource, tableViewLayout setup
+//MARK: - tableViewLayout setup; tableViewDelegate, tableViewDataSource functionality
 extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     
     func imagePostTableViewLayoutSetup() {
@@ -137,7 +137,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         imagePostTableView.delegate = self
         imagePostTableView.dataSource = self
-        imagePostTableView.allowsSelection = false
+        imagePostTableView.allowsSelection = true
         
         imagePostTableView.rowHeight = 400
         imagePostTableView.translatesAutoresizingMaskIntoConstraints = false
@@ -190,6 +190,13 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedPost = self.posts[indexPath.row]
+        let comment = comment_post(postId: selectedPost.postId, text: "this a test comment")
+        ParseServerComm.addComments(with: comment) {
+            print("successfully to post a comment")
+        }
+    }
     
 }
 

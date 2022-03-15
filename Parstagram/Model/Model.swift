@@ -34,8 +34,12 @@ struct PostData_Fetch {
     let user: User_withPost
     let caption: String
     let imageFile: PFFileObject
+    let postId: String
     
 }
 
-
+struct comment_post {
+    let postId: String
+    let text: String
+}
 

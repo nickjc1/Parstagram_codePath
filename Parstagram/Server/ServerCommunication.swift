@@ -14,7 +14,6 @@ struct ParseServerComm {
     typealias successFunc = ()->()
     typealias failFunc = (Error?)->()
     
-    
     ///sign up
     ///
     ///call event4success if sign up successfully completed
@@ -102,8 +101,12 @@ struct ParseServerComm {
                 let userWithPost = User_withPost(username: postAuthor.username!, profileImageFile: postAuthor.object(forKey: "portrait") as! PFFileObject)
                 guard let postImageFile = post["image"] as? PFFileObject else {return}
                 guard let caption = post["caption"] as? String else {return}
+                guard let postId = post.objectId else {
+                    print("did not fetch the object id")
+                    return
+                }
                 
-                let fetchedPostData = PostData_Fetch(user: userWithPost, caption: caption, imageFile: postImageFile)
+                let fetchedPostData = PostData_Fetch(user: userWithPost, caption: caption, imageFile: postImageFile, postId: postId)
                 posts.append(fetchedPostData)
             }
             
@@ -112,7 +115,31 @@ struct ParseServerComm {
         
     }
     
+    ///comment a post
+    ///
+    ///add a comment to a post
+    static func addComments(with comment: comment_post, completion: successFunc? = nil) {
+        let commentText = comment.text
+        let postId = comment.postId
+        getPostToComment(for: postId) { post in
+            let comment2Post = PFObject(className: "Comments")
+            comment2Post["comment"] = commentText
+            comment2Post["author"] = PFUser.current()!
+            comment2Post["post"] = post
+            post.add(comment2Post, forKey: "comments")
+            post.saveInBackground { success, error in
+                if(success) {
+                    completion?()
+                } else if let e = error {
+                    print("encounter error when saving comment to the post(id: \(postId)). \nerror description:\(e.localizedDescription)")
+                }
+            }
+            
+        }
+    }
     
+    
+//MARK: - class privite methods
     
     private static func imageConvert(for image: UIImage) -> PFFileObject? {
         if let imageData = image.pngData() {
@@ -120,5 +147,19 @@ struct ParseServerComm {
             return imageFile
         }
         return nil
+    }
+    
+    private static func getPostToComment(for id: String, completion: @escaping (PFObject)->()) {
+        let query = PFQuery(className: "Posts")
+        query.whereKey("objectId", equalTo: id)
+        query.findObjectsInBackground { objects, error in
+            if let posts = objects {
+                completion(posts.first!)
+            } else {
+                print("Did not find the post with referred id : \(id)")
+                guard let e = error else {return}
+                print("The error: \(e.localizedDescription)")
+            }
+        }
     }
 }

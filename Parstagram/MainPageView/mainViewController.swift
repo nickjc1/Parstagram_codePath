@@ -15,7 +15,7 @@ class MainViewController: UIViewController {
     
     let imagePostTableView: UITableView = {
         let tv = UITableView()
-        tv.register(PostTableViewCell.self, forCellReuseIdentifier: "cell")
+        tv.register(PostTableViewCell.self, forCellReuseIdentifier: "postCell")
         return tv
     }()
     
@@ -139,7 +139,8 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         imagePostTableView.dataSource = self
         imagePostTableView.allowsSelection = true
         
-        imagePostTableView.rowHeight = 400
+        imagePostTableView.estimatedRowHeight = 500
+        imagePostTableView.rowHeight = UITableView.automaticDimension
         imagePostTableView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             imagePostTableView.topAnchor.constraint(equalTo: self.view.topAnchor),
@@ -154,7 +155,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as? PostTableViewCell else {return UITableViewCell()}
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "postCell") as? PostTableViewCell else {return UITableViewCell()}
         let post = posts[indexPath.row]
         
         let postAuthorName:String = post.user.username
@@ -167,8 +168,13 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             }
         }
         
-        let caption:String = post.caption
-        cell.captionLabel.text = caption
+        let captionAuthorName = postAuthorName
+        let boldStrAttribute = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16)]
+        let attributedCaption = NSMutableAttributedString(string: captionAuthorName, attributes: boldStrAttribute)
+        
+        let caption = NSMutableAttributedString(string: " \(post.caption)", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)])
+        attributedCaption.append(caption)
+        cell.captionLabel.attributedText = attributedCaption
         
         let postImageFile = post.imageFile
         if let imageUrlStr = postImageFile.url {

@@ -35,6 +35,8 @@ class PostTableViewCell: UITableViewCell {
         let lb = UILabel()
         lb.font = .systemFont(ofSize: 18)
 //        lb.backgroundColor = .systemMint
+        lb.textAlignment = .natural
+        lb.numberOfLines = 0
         return lb
     }()
 
@@ -56,7 +58,7 @@ extension PostTableViewCell {
         userImageViewLayoutSetup()
         authorLableLayoutSetup()
         igPosterImageViewLayoutSetup()
-        captionLabelLayoutSetup()
+        captionLayoutSetup()
     }
     
     func userImageViewLayoutSetup() {
@@ -95,17 +97,18 @@ extension PostTableViewCell {
         ])
     }
     
-    func captionLabelLayoutSetup() {
+    func captionLayoutSetup() {
         self.addSubview(captionLabel)
         captionLabel.translatesAutoresizingMaskIntoConstraints = false
-        
         NSLayoutConstraint.activate([
-            captionLabel.topAnchor.constraint(equalTo: igPostImageView.bottomAnchor, constant: 2),
-            captionLabel.leadingAnchor.constraint(equalTo: igPostImageView.leadingAnchor),
-            captionLabel.trailingAnchor.constraint(equalTo: igPostImageView.trailingAnchor),
-            captionLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -20)
+            self.captionLabel.leadingAnchor.constraint(equalTo: self.igPostImageView.leadingAnchor),
+            self.captionLabel.trailingAnchor.constraint(equalTo: self.igPostImageView.trailingAnchor),
+            self.captionLabel.topAnchor.constraint(equalTo: self.igPostImageView.bottomAnchor, constant: 8),
+            self.captionLabel.bottomAnchor.constraint(lessThanOrEqualTo: self.bottomAnchor, constant: -5)
         ])
+        
     }
+    
 }
 
 

@@ -84,7 +84,7 @@ struct ParseServerComm {
     static func getImagePosts(lessEqualThen queryLimit: Int, completion: @escaping ([PostData_Fetch])->()) {
         
         let query = PFQuery(className: "Posts")
-        query.includeKey("user")
+        query.includeKeys(["user", "comments", "comments.author"])
         query.order(byDescending: "createdAt")
         query.limit = queryLimit
         
@@ -101,15 +101,26 @@ struct ParseServerComm {
                 let userWithPost = User_withPost(username: postAuthor.username!, profileImageFile: postAuthor.object(forKey: "portrait") as! PFFileObject)
                 guard let postImageFile = post["image"] as? PFFileObject else {return}
                 guard let caption = post["caption"] as? String else {return}
-                guard let postId = post.objectId else {
-                    print("did not fetch the object id")
-                    return
+                guard let postId = post.objectId else {return}
+                let comments:[PFObject]? = post["comments"] as? [PFObject]
+                var postComments:[Comment_fetch]?
+                if comments == nil {
+                    postComments = nil
+                } else {
+                    postComments = []
+                    for com in comments! {
+                        guard let commentAuthor = com["author"] as? PFUser else {return}
+                        let comAuthorName = commentAuthor.username!
+                        guard let comText = com["comment"] as? String else {return}
+//                        print(comText)
+                        let postComment = Comment_fetch(comAuthorName: comAuthorName, text: comText)
+                        postComments?.append(postComment)
+                    }
                 }
                 
-                let fetchedPostData = PostData_Fetch(user: userWithPost, caption: caption, imageFile: postImageFile, postId: postId)
+                let fetchedPostData = PostData_Fetch(user: userWithPost, caption: caption, imageFile: postImageFile, postId: postId, comments: postComments)
                 posts.append(fetchedPostData)
             }
-            
             completion(posts)
         }
         
@@ -118,7 +129,7 @@ struct ParseServerComm {
     ///comment a post
     ///
     ///add a comment to a post
-    static func addComments(with comment: comment_post, completion: successFunc? = nil) {
+    static func addComments(with comment: Comment_post, completion: successFunc? = nil) {
         let commentText = comment.text
         let postId = comment.postId
         getPostToComment(for: postId) { post in

@@ -33,7 +33,7 @@ class PostTableViewCell: UITableViewCell {
     
     let captionLabel: UILabel = {
         let lb = UILabel()
-        lb.font = .systemFont(ofSize: 18)
+//        lb.font = .systemFont(ofSize: 18)
 //        lb.backgroundColor = .systemMint
         lb.textAlignment = .natural
         lb.numberOfLines = 0

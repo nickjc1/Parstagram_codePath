@@ -16,8 +16,10 @@ class MainViewController: UIViewController {
     let imagePostTableView: UITableView = {
         let tv = UITableView()
         tv.register(PostTableViewCell.self, forCellReuseIdentifier: "postCell")
+        tv.register(CommentTableViewCell.self, forCellReuseIdentifier: "commentCell")
         return tv
     }()
+    
     
     var posts = [PostData_Fetch]()
     var limit = 4
@@ -139,7 +141,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         imagePostTableView.dataSource = self
         imagePostTableView.allowsSelection = true
         
-        imagePostTableView.estimatedRowHeight = 500
+//        imagePostTableView.estimatedRowHeight = 500
         imagePostTableView.rowHeight = UITableView.automaticDimension
         imagePostTableView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -150,44 +152,69 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         ])
     }
     
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return posts.count
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        posts.count
+        return self.posts[section].comments == nil ? 1 : 1 + self.posts[section].comments!.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "postCell") as? PostTableViewCell else {return UITableViewCell()}
-        let post = posts[indexPath.row]
         
-        let postAuthorName:String = post.user.username
-        cell.authorLabel.text = postAuthorName
         
-        let postAuthroPortraitFile = post.user.profileImageFile
-        if let portraitUrlStr = postAuthroPortraitFile.url {
-            if let portraitUrl = URL(string: portraitUrlStr) {
-                cell.authorImageView.af.setImage(withURL: portraitUrl)
+        let post = self.posts[indexPath.section]
+//        print("the section is: \(indexPath.section)")
+//        print("the row is: \(indexPath.row)")
+//        print(post.caption)
+//        print(post.comments ?? "no comments")
+//        print()
+        
+        if indexPath.row == 0 {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "postCell") as? PostTableViewCell else {return UITableViewCell()}
+            let postAuthorName:String = post.user.username
+            cell.authorLabel.text = postAuthorName
+            
+            let postAuthroPortraitFile = post.user.profileImageFile
+            if let portraitUrlStr = postAuthroPortraitFile.url {
+                if let portraitUrl = URL(string: portraitUrlStr) {
+                    cell.authorImageView.af.setImage(withURL: portraitUrl)
+                }
             }
+            
+            let captionAuthorName = postAuthorName
+            let boldStrAttribute = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16)]
+            let attributedCaption = NSMutableAttributedString(string: captionAuthorName, attributes: boldStrAttribute)
+            
+            let caption = NSMutableAttributedString(string: " \(post.caption)", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)])
+            attributedCaption.append(caption)
+            cell.captionLabel.attributedText = attributedCaption
+            
+            let postImageFile = post.imageFile
+            if let imageUrlStr = postImageFile.url {
+                if let imageUrl = URL(string: imageUrlStr) {
+                    cell.igPostImageView.af.setImage(withURL: imageUrl)
+                }
+            }
+            return cell
+        } else {
+            guard let commentCell = tableView.dequeueReusableCell(withIdentifier: "commentCell") as? CommentTableViewCell else {return UITableViewCell()}
+            if let comment = post.comments?[indexPath.row - 1] {
+                let name = comment.comAuthorName
+                let content = " \(comment.text)"
+                let boldStrAttr = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16)]
+                let normalStrAttr = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)]
+                let attributedComment = NSMutableAttributedString(string: name, attributes: boldStrAttr)
+                attributedComment.append(NSMutableAttributedString(string: content, attributes: normalStrAttr))
+                commentCell.commentLable.attributedText = attributedComment
+            }
+            return commentCell
         }
         
-        let captionAuthorName = postAuthorName
-        let boldStrAttribute = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16)]
-        let attributedCaption = NSMutableAttributedString(string: captionAuthorName, attributes: boldStrAttribute)
-        
-        let caption = NSMutableAttributedString(string: " \(post.caption)", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)])
-        attributedCaption.append(caption)
-        cell.captionLabel.attributedText = attributedCaption
-        
-        let postImageFile = post.imageFile
-        if let imageUrlStr = postImageFile.url {
-            if let imageUrl = URL(string: imageUrlStr) {
-                cell.igPostImageView.af.setImage(withURL: imageUrl)
-            }
-        }
-        
-        return cell
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if(indexPath.row == posts.count - 1) {
+        if(indexPath.section == posts.count - 1) {
             if(self.limit <= posts.count) {
                 self.limit += 2
                 queryData()
@@ -197,8 +224,8 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedPost = self.posts[indexPath.row]
-        let comment = comment_post(postId: selectedPost.postId, text: "this a test comment")
+        let selectedPost = self.posts[indexPath.section]
+        let comment = Comment_post(postId: selectedPost.postId, text: "this a test comment")
         ParseServerComm.addComments(with: comment) {
             print("successfully to post a comment")
         }

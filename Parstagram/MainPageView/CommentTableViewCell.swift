@@ -22,6 +22,7 @@ class CommentTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         self.commentLableLayoutSetup()
+        self.selectionStyle = .none
     }
     
     required init?(coder: NSCoder) {

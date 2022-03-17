@@ -40,7 +40,7 @@ struct PostData_Fetch {
 
 struct Comment_post {
     let postId: String
-    let text: String
+    var text: String
 }
 
 struct Comment_fetch {

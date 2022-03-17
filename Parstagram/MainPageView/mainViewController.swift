@@ -42,13 +42,16 @@ class MainViewController: UIViewController {
     let submitCommentButton: UIButton = {
         let bt = UIButton(type: .system)
         bt.setImage(UIImage(named: "submitButton"), for: .normal)
+        bt.addTarget(self, action: #selector(submitButtonTapped(_:)), for: .touchUpInside)
         return bt
     }()
     
+    //pass the postId from the cell whose addCommentButton is tapped
+    var commentToBePost: Comment_post?
     
     var posts = [PostData_Fetch]()
     var limit = 4
-
+//MARK: - viewdidload()
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .white
@@ -212,6 +215,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "postCell") as? PostTableViewCell else {return UITableViewCell()}
             
             cell.delegate = self
+            cell.post = post
             
             let postAuthorName:String = post.user.username
             cell.authorLabel.text = postAuthorName
@@ -265,14 +269,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        let selectedPost = self.posts[indexPath.section]
-//        let comment = Comment_post(postId: selectedPost.postId, text: "this a test comment")
-//        ParseServerComm.addComments(with: comment) {
-//            print("successfully to post a comment")
-//        }
-        
         self.keyboardTextField.resignFirstResponder()
-//        kbTextFieldContainer.isHidden = true
     }
     
 }
@@ -341,11 +338,26 @@ extension MainViewController: PostTableViewCellDelegate {
     }
     
     //postTableViewCellDelegateCell delegate function
-    func addCommentButtonTapped() {
+    func addCommentButtonTapped(completion: () -> (Comment_post)?) {
         DispatchQueue.main.async {
 //            self.kbTextFieldContainer.isHidden = false
             self.keyboardTextField.becomeFirstResponder()
         }
+        self.commentToBePost = completion()
+    }
+    
+    @objc func submitButtonTapped(_ sender: UIButton) {
+        if let postId = self.commentToBePost?.postId {
+            if self.keyboardTextField.text?.count != 0 {
+                let text = self.keyboardTextField.text!
+                ParseServerComm.addComments(with: Comment_post(postId: postId, text: text)) {
+                    self.queryData()
+                    print("successfully post a comment")
+                }
+            }
+        }
+        self.keyboardTextField.text = ""
+        self.keyboardTextField.resignFirstResponder()
     }
     
     func keyboardObserverConfig() {
@@ -356,9 +368,9 @@ extension MainViewController: PostTableViewCellDelegate {
     @objc func handleKeyboardNotification(notification: NSNotification) {
         if let userInfo = notification.userInfo {
             if notification.name == UIResponder.keyboardWillShowNotification {
-                print("here")
+//                print("here")
                 guard let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {return}
-                print(keyboardFrame)
+//                print(keyboardFrame)
                 bottomConstraint?.constant = -keyboardFrame.height
             } else {
                 bottomConstraint?.constant = 50

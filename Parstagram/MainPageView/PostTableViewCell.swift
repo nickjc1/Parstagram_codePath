@@ -8,12 +8,13 @@
 import UIKit
 
 protocol PostTableViewCellDelegate {
-    func addCommentButtonTapped()
+    func addCommentButtonTapped(completion: ()->(Comment_post)?)
 }
 
 class PostTableViewCell: UITableViewCell {
     
     var delegate:PostTableViewCellDelegate?
+    var post: PostData_Fetch?
     
     let authorImageView: UIImageView = {
         let ui = UIImageView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
@@ -60,6 +61,7 @@ class PostTableViewCell: UITableViewCell {
         //add items into self.contentView!!!
         cellLayoutSetup()
         contentView.isUserInteractionEnabled = true
+        self.selectionStyle = .none
         
     }
     
@@ -144,7 +146,10 @@ extension PostTableViewCell {
 extension PostTableViewCell {
     @objc func addCommentButtonTapped(_ sender: UIButton) {
 //        print("The comment button is tapped")
-        self.delegate?.addCommentButtonTapped()
+        self.delegate?.addCommentButtonTapped(completion: {
+            guard let postId = self.post?.postId else {return nil}
+            return Comment_post(postId: postId, text: "")
+        })
     }
 }
 

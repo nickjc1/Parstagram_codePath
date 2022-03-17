@@ -7,7 +7,13 @@
 
 import UIKit
 
+protocol PostTableViewCellDelegate {
+    func cellSubmitButtonTapped()
+}
+
 class PostTableViewCell: UITableViewCell {
+    
+    var delegate:PostTableViewCellDelegate?
     
     let authorImageView: UIImageView = {
         let ui = UIImageView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
@@ -31,6 +37,14 @@ class PostTableViewCell: UITableViewCell {
         return iv
     }()
     
+    let commentButton:UIButton = {
+        let bt = UIButton(type: .system)
+        bt.setImage(UIImage(named: "comIcon"), for: .normal)
+        bt.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+        bt.addTarget(self, action: #selector(commentButtonTapped(_:)), for: .touchUpInside)
+        return bt
+    }()
+    
     let captionLabel: UILabel = {
         let lb = UILabel()
 //        lb.font = .systemFont(ofSize: 18)
@@ -43,7 +57,10 @@ class PostTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
+        //add items into self.contentView!!!
         cellLayoutSetup()
+        contentView.isUserInteractionEnabled = true
+        
     }
     
     required init?(coder: NSCoder) {
@@ -58,35 +75,36 @@ extension PostTableViewCell {
         userImageViewLayoutSetup()
         authorLableLayoutSetup()
         igPosterImageViewLayoutSetup()
+        commentButtonLayoutSetup()
         captionLayoutSetup()
     }
     
     func userImageViewLayoutSetup() {
-        self.addSubview(authorImageView)
+        self.contentView.addSubview(authorImageView)
         authorImageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            authorImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
-            authorImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 5),
+            authorImageView.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 5),
+            authorImageView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 5),
             authorImageView.heightAnchor.constraint(equalToConstant: 50),
             authorImageView.widthAnchor.constraint(equalTo: authorImageView.heightAnchor)
         ])
     }
     
     func authorLableLayoutSetup() {
-        self.addSubview(authorLabel)
+        self.contentView.addSubview(authorLabel)
         authorLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             authorLabel.centerYAnchor.constraint(equalTo: authorImageView.centerYAnchor),
             authorLabel.leadingAnchor.constraint(equalTo: authorImageView.trailingAnchor, constant: 5),
-            authorLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5),
+            authorLabel.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -5),
             authorLabel.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
     func igPosterImageViewLayoutSetup() {
-        self.addSubview(igPostImageView)
+        self.contentView.addSubview(igPostImageView)
         igPostImageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
@@ -97,21 +115,41 @@ extension PostTableViewCell {
         ])
     }
     
+    func commentButtonLayoutSetup() {
+        self.contentView.addSubview(commentButton)
+        commentButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            commentButton.topAnchor.constraint(equalTo: igPostImageView.bottomAnchor, constant: 5),
+            commentButton.leadingAnchor.constraint(equalTo: igPostImageView.leadingAnchor),
+            commentButton.heightAnchor.constraint(equalToConstant: 30),
+            commentButton.widthAnchor.constraint(equalToConstant: 30)
+        ])
+    }
+    
     func captionLayoutSetup() {
-        self.addSubview(captionLabel)
+        self.contentView.addSubview(captionLabel)
         captionLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             self.captionLabel.leadingAnchor.constraint(equalTo: self.igPostImageView.leadingAnchor),
             self.captionLabel.trailingAnchor.constraint(equalTo: self.igPostImageView.trailingAnchor),
-            self.captionLabel.topAnchor.constraint(equalTo: self.igPostImageView.bottomAnchor, constant: 8),
-            self.captionLabel.bottomAnchor.constraint(lessThanOrEqualTo: self.bottomAnchor, constant: -5)
+            self.captionLabel.topAnchor.constraint(equalTo: self.commentButton.bottomAnchor, constant: 5),
+            self.captionLabel.bottomAnchor.constraint(lessThanOrEqualTo: self.contentView.bottomAnchor, constant: -5)
         ])
-        
+
     }
     
 }
 
+extension PostTableViewCell {
+    @objc func commentButtonTapped(_ sender: UIButton) {
+//        print("The comment button is tapped")
+        self.delegate?.cellSubmitButtonTapped()
+    }
+}
 
+
+//MARK: - UIImageView extention
 extension UIImageView {
     func circleImageView() {
         self.layer.cornerRadius = self.frame.size.width / 2.0
@@ -123,3 +161,4 @@ extension UIImageView {
         self.layer.borderColor = UIColor.white.cgColor
     }
 }
+

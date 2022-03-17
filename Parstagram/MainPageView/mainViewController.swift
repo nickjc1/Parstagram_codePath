@@ -20,6 +20,29 @@ class MainViewController: UIViewController {
         return tv
     }()
     
+    let kbTextFieldContainer: UIView = {
+        let uv = UIView()
+        uv.backgroundColor = .white
+        uv.isHidden = true
+        return uv
+    }()
+    
+    let keyboardTextField: UITextField = {
+        let tf = UITextField()
+        tf.backgroundColor = .white
+        tf.borderStyle = .roundedRect
+        tf.font = UIFont.systemFont(ofSize: 18)
+        tf.placeholder = "say something..."
+        tf.isEnabled = true
+        return tf
+    }()
+    
+    let commentSubmitbutton: UIButton = {
+        let bt = UIButton(type: .system)
+        bt.setImage(UIImage(named: "submitButton"), for: .normal)
+        return bt
+    }()
+    
     
     var posts = [PostData_Fetch]()
     var limit = 4
@@ -34,6 +57,8 @@ class MainViewController: UIViewController {
         imagePostTableViewLayoutSetup()
         drapDown2RefreshData()
         queryData()
+        
+        keyboardTextFieldLayoutSetup()
         
     }
     
@@ -155,7 +180,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         imagePostTableView.delegate = self
         imagePostTableView.dataSource = self
-        imagePostTableView.allowsSelection = true
+        imagePostTableView.allowsSelection = false
         
 //        imagePostTableView.estimatedRowHeight = 500
         imagePostTableView.rowHeight = UITableView.automaticDimension
@@ -178,16 +203,13 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        
         let post = self.posts[indexPath.section]
-//        print("the section is: \(indexPath.section)")
-//        print("the row is: \(indexPath.row)")
-//        print(post.caption)
-//        print(post.comments ?? "no comments")
-//        print()
         
         if indexPath.row == 0 {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "postCell") as? PostTableViewCell else {return UITableViewCell()}
+            
+            cell.delegate = self
+            
             let postAuthorName:String = post.user.username
             cell.authorLabel.text = postAuthorName
             
@@ -240,11 +262,11 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedPost = self.posts[indexPath.section]
-        let comment = Comment_post(postId: selectedPost.postId, text: "this a test comment")
-        ParseServerComm.addComments(with: comment) {
-            print("successfully to post a comment")
-        }
+//        let selectedPost = self.posts[indexPath.section]
+//        let comment = Comment_post(postId: selectedPost.postId, text: "this a test comment")
+//        ParseServerComm.addComments(with: comment) {
+//            print("successfully to post a comment")
+//        }
     }
     
 }
@@ -275,6 +297,45 @@ extension MainViewController {
         self.queryData()
         DispatchQueue.main.async {
             self.imagePostTableView.refreshControl?.endRefreshing()
+        }
+    }
+}
+
+//MARK: - Keyboard textfield layout and functionality
+extension MainViewController: PostTableViewCellDelegate {
+    
+    func keyboardTextFieldLayoutSetup() {
+        
+        self.view.addSubview(kbTextFieldContainer)
+        kbTextFieldContainer.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            kbTextFieldContainer.heightAnchor.constraint(equalToConstant: 40),
+            kbTextFieldContainer.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            kbTextFieldContainer.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            kbTextFieldContainer.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+        
+        self.kbTextFieldContainer.addSubview(commentSubmitbutton)
+        commentSubmitbutton.translatesAutoresizingMaskIntoConstraints = false
+        self.kbTextFieldContainer.addSubview(keyboardTextField)
+        keyboardTextField.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            commentSubmitbutton.trailingAnchor.constraint(equalTo: kbTextFieldContainer.trailingAnchor, constant: -5),
+            commentSubmitbutton.heightAnchor.constraint(equalToConstant: 25),
+            commentSubmitbutton.widthAnchor.constraint(equalToConstant: 25),
+            commentSubmitbutton.centerYAnchor.constraint(equalTo: kbTextFieldContainer.centerYAnchor),
+            
+            keyboardTextField.heightAnchor.constraint(equalToConstant: 35),
+            keyboardTextField.leadingAnchor.constraint(equalTo: kbTextFieldContainer.leadingAnchor, constant: 5),
+            keyboardTextField.trailingAnchor.constraint(equalTo: commentSubmitbutton.leadingAnchor, constant: -5),
+            keyboardTextField.centerYAnchor.constraint(equalTo:kbTextFieldContainer.centerYAnchor)
+        ])
+    }
+    
+    //postTableViewCellDelegateCell delegate function
+    func cellSubmitButtonTapped() {
+        DispatchQueue.main.async {
+            self.kbTextFieldContainer.isHidden = false
         }
     }
 }

@@ -8,7 +8,7 @@
 import UIKit
 
 protocol PostTableViewCellDelegate {
-    func cellSubmitButtonTapped()
+    func addCommentButtonTapped()
 }
 
 class PostTableViewCell: UITableViewCell {
@@ -37,11 +37,11 @@ class PostTableViewCell: UITableViewCell {
         return iv
     }()
     
-    let commentButton:UIButton = {
+    let addCommentButton:UIButton = {
         let bt = UIButton(type: .system)
         bt.setImage(UIImage(named: "comIcon"), for: .normal)
         bt.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
-        bt.addTarget(self, action: #selector(commentButtonTapped(_:)), for: .touchUpInside)
+        bt.addTarget(self, action: #selector(addCommentButtonTapped(_:)), for: .touchUpInside)
         return bt
     }()
     
@@ -116,14 +116,14 @@ extension PostTableViewCell {
     }
     
     func commentButtonLayoutSetup() {
-        self.contentView.addSubview(commentButton)
-        commentButton.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.addSubview(addCommentButton)
+        addCommentButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            commentButton.topAnchor.constraint(equalTo: igPostImageView.bottomAnchor, constant: 5),
-            commentButton.leadingAnchor.constraint(equalTo: igPostImageView.leadingAnchor),
-            commentButton.heightAnchor.constraint(equalToConstant: 30),
-            commentButton.widthAnchor.constraint(equalToConstant: 30)
+            addCommentButton.topAnchor.constraint(equalTo: igPostImageView.bottomAnchor, constant: 5),
+            addCommentButton.leadingAnchor.constraint(equalTo: igPostImageView.leadingAnchor),
+            addCommentButton.heightAnchor.constraint(equalToConstant: 30),
+            addCommentButton.widthAnchor.constraint(equalToConstant: 30)
         ])
     }
     
@@ -133,7 +133,7 @@ extension PostTableViewCell {
         NSLayoutConstraint.activate([
             self.captionLabel.leadingAnchor.constraint(equalTo: self.igPostImageView.leadingAnchor),
             self.captionLabel.trailingAnchor.constraint(equalTo: self.igPostImageView.trailingAnchor),
-            self.captionLabel.topAnchor.constraint(equalTo: self.commentButton.bottomAnchor, constant: 5),
+            self.captionLabel.topAnchor.constraint(equalTo: self.addCommentButton.bottomAnchor, constant: 5),
             self.captionLabel.bottomAnchor.constraint(lessThanOrEqualTo: self.contentView.bottomAnchor, constant: -5)
         ])
 
@@ -142,9 +142,9 @@ extension PostTableViewCell {
 }
 
 extension PostTableViewCell {
-    @objc func commentButtonTapped(_ sender: UIButton) {
+    @objc func addCommentButtonTapped(_ sender: UIButton) {
 //        print("The comment button is tapped")
-        self.delegate?.cellSubmitButtonTapped()
+        self.delegate?.addCommentButtonTapped()
     }
 }
 

@@ -23,9 +23,11 @@ class MainViewController: UIViewController {
     let kbTextFieldContainer: UIView = {
         let uv = UIView()
         uv.backgroundColor = .white
-        uv.isHidden = true
+//        uv.isHidden = true
         return uv
     }()
+    
+    var bottomConstraint: NSLayoutConstraint?
     
     let keyboardTextField: UITextField = {
         let tf = UITextField()
@@ -37,7 +39,7 @@ class MainViewController: UIViewController {
         return tf
     }()
     
-    let commentSubmitbutton: UIButton = {
+    let submitCommentButton: UIButton = {
         let bt = UIButton(type: .system)
         bt.setImage(UIImage(named: "submitButton"), for: .normal)
         return bt
@@ -59,6 +61,7 @@ class MainViewController: UIViewController {
         queryData()
         
         keyboardTextFieldLayoutSetup()
+        keyboardObserverConfig()
         
     }
     
@@ -180,7 +183,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         imagePostTableView.delegate = self
         imagePostTableView.dataSource = self
-        imagePostTableView.allowsSelection = false
+        imagePostTableView.allowsSelection = true
         
 //        imagePostTableView.estimatedRowHeight = 500
         imagePostTableView.rowHeight = UITableView.automaticDimension
@@ -267,6 +270,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 //        ParseServerComm.addComments(with: comment) {
 //            print("successfully to post a comment")
 //        }
+        
+        self.keyboardTextField.resignFirstResponder()
+//        kbTextFieldContainer.isHidden = true
     }
     
 }
@@ -311,31 +317,58 @@ extension MainViewController: PostTableViewCellDelegate {
         NSLayoutConstraint.activate([
             kbTextFieldContainer.heightAnchor.constraint(equalToConstant: 40),
             kbTextFieldContainer.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            kbTextFieldContainer.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            kbTextFieldContainer.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
+            kbTextFieldContainer.trailingAnchor.constraint(equalTo: self.view.trailingAnchor)
+//            kbTextFieldContainer.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: keyboardBottomConst)
         ])
+        bottomConstraint = NSLayoutConstraint(item: kbTextFieldContainer, attribute: .bottom, relatedBy: .equal, toItem: self.view, attribute: .bottom, multiplier: 1, constant: 50)
+        self.view.addConstraint(bottomConstraint!)
         
-        self.kbTextFieldContainer.addSubview(commentSubmitbutton)
-        commentSubmitbutton.translatesAutoresizingMaskIntoConstraints = false
+        self.kbTextFieldContainer.addSubview(submitCommentButton)
+        submitCommentButton.translatesAutoresizingMaskIntoConstraints = false
         self.kbTextFieldContainer.addSubview(keyboardTextField)
         keyboardTextField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            commentSubmitbutton.trailingAnchor.constraint(equalTo: kbTextFieldContainer.trailingAnchor, constant: -5),
-            commentSubmitbutton.heightAnchor.constraint(equalToConstant: 25),
-            commentSubmitbutton.widthAnchor.constraint(equalToConstant: 25),
-            commentSubmitbutton.centerYAnchor.constraint(equalTo: kbTextFieldContainer.centerYAnchor),
+            submitCommentButton.trailingAnchor.constraint(equalTo: kbTextFieldContainer.trailingAnchor, constant: -5),
+            submitCommentButton.heightAnchor.constraint(equalToConstant: 25),
+            submitCommentButton.widthAnchor.constraint(equalToConstant: 25),
+            submitCommentButton.centerYAnchor.constraint(equalTo: kbTextFieldContainer.centerYAnchor),
             
             keyboardTextField.heightAnchor.constraint(equalToConstant: 35),
             keyboardTextField.leadingAnchor.constraint(equalTo: kbTextFieldContainer.leadingAnchor, constant: 5),
-            keyboardTextField.trailingAnchor.constraint(equalTo: commentSubmitbutton.leadingAnchor, constant: -5),
+            keyboardTextField.trailingAnchor.constraint(equalTo: submitCommentButton.leadingAnchor, constant: -5),
             keyboardTextField.centerYAnchor.constraint(equalTo:kbTextFieldContainer.centerYAnchor)
         ])
     }
     
     //postTableViewCellDelegateCell delegate function
-    func cellSubmitButtonTapped() {
+    func addCommentButtonTapped() {
         DispatchQueue.main.async {
-            self.kbTextFieldContainer.isHidden = false
+//            self.kbTextFieldContainer.isHidden = false
+            self.keyboardTextField.becomeFirstResponder()
+        }
+    }
+    
+    func keyboardObserverConfig() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardNotification(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardNotification(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    @objc func handleKeyboardNotification(notification: NSNotification) {
+        if let userInfo = notification.userInfo {
+            if notification.name == UIResponder.keyboardWillShowNotification {
+                print("here")
+                guard let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {return}
+                print(keyboardFrame)
+                bottomConstraint?.constant = -keyboardFrame.height
+            } else {
+                bottomConstraint?.constant = 50
+            }
+            
+            UIView.animate(withDuration: 0, delay: 0.02, options: .curveEaseOut) {
+                self.view.layoutIfNeeded()
+            } completion: {succeed in}
+
+            
         }
     }
 }

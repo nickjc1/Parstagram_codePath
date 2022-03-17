@@ -112,7 +112,7 @@ struct ParseServerComm {
                 let comments:[PFObject]? = post["comments"] as? [PFObject]
                 var postComments:[Comment_fetch]?
                 if comments == nil {
-                    postComments = nil
+                    postComments = nil 
                 } else {
                     postComments = []
                     for com in comments! {

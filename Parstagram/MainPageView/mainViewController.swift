@@ -46,6 +46,16 @@ class MainViewController: UIViewController {
         return bt
     }()
     
+    let titleImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.contentMode = .scaleAspectFill
+        iv.clipsToBounds = true
+        iv.frame = CGRect(x: 0, y: 0, width: 40, height: 40)
+        iv.circleImageView()
+        iv.backgroundColor = .systemTeal
+        return iv
+    }()
+    
     //pass the postId from the cell whose addCommentButton is tapped
     var commentToBePost: Comment_post?
     
@@ -55,10 +65,11 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .white
-        self.navigationItem.title = "Instagram"
+//        self.navigationItem.title = "Instagram"
         
         setupNavigationBarRightButton()
         setupNavigationBarLeftButton()
+        setupNavigationBarMiddlePortrait()
         imagePostTableViewLayoutSetup()
         drapDown2RefreshData()
         queryData()
@@ -98,6 +109,23 @@ extension MainViewController {
         guard let windownScene = UIApplication.shared.connectedScenes.first as? UIWindowScene, let delegate = windownScene.delegate as? SceneDelegate else {return}
         let vc = LoginViewController()
         delegate.window?.rootViewController = vc
+    }
+}
+
+//MARK: - Navigationbar middle
+extension MainViewController {
+    func setupNavigationBarMiddlePortrait() {
+        let imageFile = PFUser.current()?.object(forKey: "portrait") as? PFFileObject
+        
+        if let portraitUrlStr = imageFile?.url {
+            if let portraitUrl = URL(string: portraitUrlStr) {
+                titleImageView.af.setImage(withURL: portraitUrl)
+            }
+        } else {
+            titleImageView.image = UIImage(named: "profile_tab")
+        }
+        
+        self.navigationItem.titleView = titleImageView
     }
 }
 

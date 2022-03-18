@@ -83,6 +83,15 @@ class MainViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         queryData()
+        
+        let imageFile = PFUser.current()?.object(forKey: "portrait") as? PFFileObject
+        if let portraitUrlStr = imageFile?.url {
+            if let portraitUrl = URL(string: portraitUrlStr) {
+                titleImageView.af.setImage(withURL: portraitUrl)
+            }
+        } else {
+            titleImageView.image = UIImage(named: "profile_tab")
+        }
     }
     
 }
@@ -119,7 +128,6 @@ extension MainViewController {
 extension MainViewController {
     func setupNavigationBarMiddlePortrait() {
         let imageFile = PFUser.current()?.object(forKey: "portrait") as? PFFileObject
-        
         if let portraitUrlStr = imageFile?.url {
             if let portraitUrl = URL(string: portraitUrlStr) {
                 titleImageView.af.setImage(withURL: portraitUrl)
@@ -213,7 +221,7 @@ extension MainViewController: UIImagePickerControllerDelegate, UINavigationContr
     //push to next viewcontroller after picking the image
     func presentNextViewController(image: UIImage) {
         let size = CGSize(width: 300, height: 300)
-        let scaledImage:UIImage = image.af.imageScaled(to: size, scale: nil)
+        let scaledImage:UIImage = image.af.imageAspectScaled(toFill: size, scale: nil)
         let vc = ImagePostViewController()
         vc.selectedImageView.image = scaledImage
         self.navigationController?.pushViewController(vc, animated: true)

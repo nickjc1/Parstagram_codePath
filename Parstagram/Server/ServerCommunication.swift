@@ -156,6 +156,24 @@ struct ParseServerComm {
         }
     }
     
+    static func updateUserPortrait(to newPortrait: UIImage, completion: successFunc? = nil) {
+        let currentUser = PFUser.current()!
+        if let portraitFile = self.imageConvert(for: newPortrait) {
+            currentUser.setObject(portraitFile, forKey: "portrait")
+            currentUser.saveInBackground { succeed, error in
+                if succeed {
+                    print("succeed to update user portrait")
+                    completion?()
+                } else {
+                    print("failed to update user portrait with error: \(error!.localizedDescription)")
+                }
+            }
+        } else {
+            print("Failed to update user portrait!")
+        }
+        
+    }
+    
     
 //MARK: - class privite methods
     

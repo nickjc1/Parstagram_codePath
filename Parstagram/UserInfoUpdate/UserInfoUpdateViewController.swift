@@ -21,7 +21,7 @@ class UserInfoUpdateViewController: UIViewController {
     
     let updateButton:UIButton = {
         let bt = UIButton(type: .system)
-//        bt.addTarget(self, action: #selector(), for: .touchUpInside)
+        bt.addTarget(self, action: #selector(updateButtonTapped(_:)), for: .touchUpInside)
         bt.setTitle("Update", for: .normal)
         bt.titleLabel?.font = .boldSystemFont(ofSize: 18)
         bt.frame = CGRect(x: 0, y: 0, width: 75, height: 40)
@@ -139,7 +139,16 @@ extension UserInfoUpdateViewController: UIImagePickerControllerDelegate, UINavig
             self.dismiss(animated: true, completion: nil)
         }
     }
-    
-    
-    
 }
+
+//MARK: - Update button functionality
+extension UserInfoUpdateViewController {
+    @objc func updateButtonTapped(_ sender: UIButton) {
+        if let image = self.userPortraitImageView.image {
+            ParseServerComm.updateUserPortrait(to: image) {
+                self.navigationController?.popViewController(animated: true)
+            }
+        }
+    }
+}
+

@@ -48,11 +48,10 @@ class MainViewController: UIViewController {
     
     let titleImageView: UIImageView = {
         let iv = UIImageView()
-        iv.contentMode = .scaleAspectFill
-        iv.clipsToBounds = true
-        iv.frame = CGRect(x: 0, y: 0, width: 40, height: 40)
+        iv.frame = CGRect(x: 0, y: 0, width: 35, height: 35)
         iv.circleImageView()
         iv.backgroundColor = .systemTeal
+        iv.isUserInteractionEnabled = true
         return iv
     }()
     
@@ -69,7 +68,6 @@ class MainViewController: UIViewController {
         
         setupNavigationBarRightButton()
         setupNavigationBarLeftButton()
-        setupNavigationBarMiddlePortrait()
         imagePostTableViewLayoutSetup()
         drapDown2RefreshData()
         queryData()
@@ -77,23 +75,28 @@ class MainViewController: UIViewController {
         keyboardTextFieldLayoutSetup()
         keyboardObserverConfig()
         
+        setupNavigationBarMiddlePortrait()
+        addGestureToTitleView()
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         queryData()
     }
+    
 }
 
 //MARK: - Navigationbar rightbutton setup and functionality
 extension MainViewController {
     func setupNavigationBarRightButton() {
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "insta_camera_btn"), style: .plain, target: self, action: #selector(rightBarButtonTapped(_:)))
-        self.navigationItem.backButtonTitle = ""
+//        self.navigationItem.backButtonTitle = ""
     }
     
     @objc func rightBarButtonTapped(_ sender: UIBarButtonItem) {
         displayPostOption()
+        self.navigationItem.backButtonTitle = ""
     }
 }
 
@@ -112,7 +115,7 @@ extension MainViewController {
     }
 }
 
-//MARK: - Navigationbar middle
+//MARK: - Navigationbar middle portrait set up
 extension MainViewController {
     func setupNavigationBarMiddlePortrait() {
         let imageFile = PFUser.current()?.object(forKey: "portrait") as? PFFileObject
@@ -125,6 +128,17 @@ extension MainViewController {
             titleImageView.image = UIImage(named: "profile_tab")
         }
         
+        //user this uiview the contraint the titleimageview layout to be at the center of the navigationbar
+        let titleUIView = UIView()
+        titleUIView.addSubview(titleImageView)
+        titleImageView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            titleImageView.centerXAnchor.constraint(equalTo: titleUIView.centerXAnchor),
+            titleImageView.centerYAnchor.constraint(equalTo: titleUIView.centerYAnchor),
+            titleImageView.heightAnchor.constraint(equalToConstant: 35),
+            titleImageView.widthAnchor.constraint(equalToConstant: 35)
+        ])
+
         self.navigationItem.titleView = titleImageView
     }
 }
@@ -172,7 +186,7 @@ extension MainViewController: UIImagePickerControllerDelegate, UINavigationContr
         }
     }
     
-    //Pick using camera buy UIImagePickerController
+    //Pick using camera by UIImagePickerController
     func pickUsingCamera() {
         let picker = UIImagePickerController()
         picker.delegate = self
@@ -410,6 +424,30 @@ extension MainViewController: PostTableViewCellDelegate {
 
             
         }
+    }
+}
+
+//MARK: - Gesturerecognizer for navigationbar user portrait
+extension MainViewController {
+    func addGestureToTitleView() {
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(titleViewtapped(_:)))
+        titleImageView.addGestureRecognizer(tapGestureRecognizer)
+    }
+    
+    @objc func titleViewtapped(_ sender: Any?) {
+        print("titleImageView tapped")
+        let vc = UserInfoUpdateViewController()
+        guard let currentPortraitfile = PFUser.current()!.object(forKey: "portrait") as? PFFileObject else {
+            self.navigationController?.pushViewController(vc, animated: true)
+            return
+        }
+        if let portraiturlStr = currentPortraitfile.url {
+            if let url = URL(string: portraiturlStr) {
+                vc.userPortraitImageView.af.setImage(withURL: url)
+            }
+        }
+        self.navigationItem.backButtonTitle = "Cancel"
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 }
 

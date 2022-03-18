@@ -37,9 +37,6 @@ class UserInfoUpdateViewController: UIViewController {
         
         addUserPortraitTapGesture()
     }
-    
-    
-
 }
 
 //MARK: - View Layout
@@ -83,14 +80,66 @@ extension UserInfoUpdateViewController {
     }
     
     @objc func userPortraitTapped(_ sender: UITapGestureRecognizer) {
-        print("image tapped")
-//        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-//        let cameraAction = UIAlertAction(title: "Camera", style: .default) { action in
-//            <#code#>
-//        }
+//        print("image tapped")
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let cameraAction = UIAlertAction(title: "Camera", style: .default) { action in
+            self.pickPhoto(by: .camera)
+        }
+        let photoAlbumAction = UIAlertAction(title: "Choose from Album", style: .default) { action in
+            self.pickPhoto(by: .photoLibrary)
+        }
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cameraAction)
+        alertController.addAction(photoAlbumAction)
+        alertController.addAction(cancel)
+        self.present(alertController, animated: true, completion: nil)
     }
 }
 
-extension UserInfoUpdateViewController {
+//MARK: - Pick image functionality
+extension UserInfoUpdateViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func pickPhoto(by source: UIImagePickerController.SourceType) {
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        picker.allowsEditing = true
+        switch source {
+        case .camera:
+            if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                picker.sourceType = .camera
+                self.present(picker, animated: true, completion: nil)
+            } else {
+                pickErrorAlert(for: source)
+            }
+            
+        case .photoLibrary:
+            if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
+                picker.sourceType = .photoLibrary
+                self.present(picker, animated: true, completion: nil)
+            } else {
+                pickErrorAlert(for: source)
+            }
+        default:
+            return
+        }
+    }
+    
+    func pickErrorAlert(for pickSource: UIImagePickerController.SourceType) {
+        let errorMessage = pickSource == .camera ? "The camera is not available" : "The photo library is not available"
+        let alertController = UIAlertController(title: "Error", message: errorMessage, preferredStyle: .alert)
+        let dismissAlertAction = UIAlertAction(title: "Ok", style: .cancel, handler: nil)
+        alertController.addAction(dismissAlertAction)
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let image = info[.editedImage] as? UIImage {
+            let size = CGSize(width: 300, height: 300)
+            let scaledImage = image.af.imageAspectScaled(toFill: size, scale: nil)
+            self.userPortraitImageView.image = scaledImage
+            self.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    
     
 }

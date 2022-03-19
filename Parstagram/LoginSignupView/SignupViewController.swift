@@ -198,8 +198,8 @@ extension SignupViewController: UIImagePickerControllerDelegate, UINavigationCon
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let image = info[.editedImage] as? UIImage {
-            let size = CGSize(width: 200, height: 200)
-            let scaledImage = image.af.imageScaled(to: size, scale: nil)
+            let size = CGSize(width: 300, height: 300)
+            let scaledImage = image.af.imageAspectScaled(toFill: size, scale: nil)
             self.userImageView.image = scaledImage
             picker.dismiss(animated: true, completion: nil)
             imagePicked = true

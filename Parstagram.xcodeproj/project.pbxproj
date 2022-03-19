@@ -17,6 +17,7 @@
 		DF7CC77A27DBF292003734B9 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF7CC77927DBF292003734B9 /* Model.swift */; };
 		DF7CC77C27DCFB06003734B9 /* ServerCommunication.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF7CC77B27DCFB06003734B9 /* ServerCommunication.swift */; };
 		DF8BF32427D6CB940058A65E /* ImagePostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF8BF32327D6CB940058A65E /* ImagePostViewController.swift */; };
+		DFCAC93827E418F700DF9B9F /* UserInfoUpdateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFCAC93727E418F700DF9B9F /* UserInfoUpdateViewController.swift */; };
 		DFE69B7F27D8011800DDA2F7 /* PostTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFE69B7E27D8011800DDA2F7 /* PostTableViewCell.swift */; };
 		DFE69B8127D8186300DDA2F7 /* SignupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFE69B8027D8186300DDA2F7 /* SignupViewController.swift */; };
 		DFEDD7A027D5B43F008FA758 /* mainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFEDD79F27D5B43F008FA758 /* mainViewController.swift */; };
@@ -37,6 +38,7 @@
 		DF7CC77927DBF292003734B9 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		DF7CC77B27DCFB06003734B9 /* ServerCommunication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerCommunication.swift; sourceTree = "<group>"; };
 		DF8BF32327D6CB940058A65E /* ImagePostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ImagePostViewController.swift; path = "/Users/cjiang/Desktop/iOS/1. Project/Parstagram/Parstagram/Parstagram/ImagePostViewController.swift"; sourceTree = "<absolute>"; };
+		DFCAC93727E418F700DF9B9F /* UserInfoUpdateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoUpdateViewController.swift; sourceTree = "<group>"; };
 		DFE69B7E27D8011800DDA2F7 /* PostTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostTableViewCell.swift; sourceTree = "<group>"; };
 		DFE69B8027D8186300DDA2F7 /* SignupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupViewController.swift; sourceTree = "<group>"; };
 		DFEDD79F27D5B43F008FA758 /* mainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mainViewController.swift; sourceTree = "<group>"; };
@@ -87,6 +89,7 @@
 			children = (
 				DF38C3CC27D5212C002807FA /* AppDelegate.swift */,
 				DF38C3CE27D5212C002807FA /* SceneDelegate.swift */,
+				DFCAC93927E418FE00DF9B9F /* UserInfoUpdate */,
 				DF7CC77F27DCFB9C003734B9 /* LoginSignupView */,
 				DF7CC78027DCFBBA003734B9 /* Model */,
 				DF7CC78127DCFBE5003734B9 /* Server */,
@@ -141,6 +144,14 @@
 				DF7CC77B27DCFB06003734B9 /* ServerCommunication.swift */,
 			);
 			path = Server;
+			sourceTree = "<group>";
+		};
+		DFCAC93927E418FE00DF9B9F /* UserInfoUpdate */ = {
+			isa = PBXGroup;
+			children = (
+				DFCAC93727E418F700DF9B9F /* UserInfoUpdateViewController.swift */,
+			);
+			path = UserInfoUpdate;
 			sourceTree = "<group>";
 		};
 		E7EF9254A2DF351EE82AA676 /* Pods */ = {
@@ -275,6 +286,7 @@
 				DFEDD7A027D5B43F008FA758 /* mainViewController.swift in Sources */,
 				DFE69B7F27D8011800DDA2F7 /* PostTableViewCell.swift in Sources */,
 				DFF708BE27E1482900FE5BC8 /* CommentTableViewCell.swift in Sources */,
+				DFCAC93827E418F700DF9B9F /* UserInfoUpdateViewController.swift in Sources */,
 				DF7CC77C27DCFB06003734B9 /* ServerCommunication.swift in Sources */,
 				DF7CC77A27DBF292003734B9 /* Model.swift in Sources */,
 			);

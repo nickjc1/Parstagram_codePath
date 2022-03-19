@@ -20,6 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let _ = (scene as? UIWindowScene) else { return }
         
         if(PFUser.current() != nil) {
+            
             let rootVC = MainViewController()
             let nvController = UINavigationController(rootViewController: rootVC)
             window?.rootViewController = nvController
